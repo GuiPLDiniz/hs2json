@@ -1,6 +1,13 @@
 
 module SimpleJSON
   ( JValue(..)
+  , getString
+  , getInt
+  , getDouble
+  , getBool
+  , getObject
+  , getArray
+  , isNull
   ) where
 
 data JValue
@@ -11,3 +18,36 @@ data JValue
   | JObject [(String, JValue)]
   | JArray [JValue]
   deriving (Eq, Show)
+
+getString :: JValue -> Maybe String
+getString (JString s) = Just s
+getString _           = Nothing
+
+getInt :: JValue -> Maybe Int
+getInt (JNumber n)
+  | not (isNaN n || isInfinite n)
+  , n >= fromIntegral (minBound :: Int)
+  , n < negate (fromIntegral (minBound :: Int))
+  , n == fromIntegral (truncate n :: Integer)
+  = Just (truncate n)
+getInt _ = Nothing
+
+getDouble :: JValue -> Maybe Double
+getDouble (JNumber n) = Just n
+getDouble _           = Nothing
+
+getBool :: JValue -> Maybe Bool
+getBool (JBool b) = Just b
+getBool _         = Nothing
+
+getObject :: JValue -> Maybe [(String, JValue)]
+getObject (JObject o) = Just o
+getObject _           = Nothing
+
+getArray :: JValue -> Maybe [JValue]
+getArray (JArray a) = Just a
+getArray _          = Nothing
+
+isNull :: JValue -> Bool
+isNull JNull = True
+isNull _     = False

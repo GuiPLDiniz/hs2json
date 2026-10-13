@@ -5,10 +5,18 @@ import SimpleJSON
 
 main :: IO ()
 main = do
-  let pessoa = JObject
-        [ ("nome", JString "Ana")
-        , ("idade", JNumber 22)
-        , ("ativo", JBool True)
-        ]
-  
-  print pessoa
+  let nome = JString "Ana"
+  let idade = JNumber 22
+  let ativo = JBool True
+  let vazio = JNull
+
+  putStrLn "Testando accessors JSON:"
+
+  print (getString nome)
+  print (getInt idade)
+  print (getDouble idade)
+  print (getBool ativo)
+  print (isNull vazio)
+
+  putStrLn "Testando tipo incorreto:"
+  print (getString idade)
