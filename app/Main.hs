@@ -1,22 +1,30 @@
 
 module Main where
 
-import SimpleJSON
+import Prelude hiding ((<>))
+import Prettify
 
 main :: IO ()
 main = do
-  let nome = JString "Ana"
-  let idade = JNumber 22
-  let ativo = JBool True
-  let vazio = JNull
+  let documento =
+        text "Haskell" <> char ' ' <> text "JSON"
 
-  putStrLn "Testando accessors JSON:"
+  putStrLn "Teste 1 - Compact:"
+  putStrLn (compact documento)
 
-  print (getString nome)
-  print (getInt idade)
-  print (getDouble idade)
-  print (getBool ativo)
-  print (isNull vazio)
+  putStrLn "\nTeste 2 - Pretty:"
+  putStrLn (pretty 80 documento)
 
-  putStrLn "Testando tipo incorreto:"
-  print (getString idade)
+  let lista =
+        fsep
+          [ text "Haskell"
+          , text "permite"
+          , text "formatar"
+          , text "documentos"
+          ]
+
+  putStrLn "\nTeste 3 - Largura 80:"
+  putStrLn (pretty 80 lista)
+
+  putStrLn "\nTeste 4 - Largura 15:"
+  putStrLn (pretty 15 lista)
