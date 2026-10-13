@@ -1,8 +1,14 @@
-module Main (main) where
 
-import qualified MyLib (someFunc)
+module Main where
+
+import SimpleJSON
 
 main :: IO ()
 main = do
-  putStrLn "Hello, Haskell!"
-  MyLib.someFunc
+  let pessoa = JObject
+        [ ("nome", JString "Ana")
+        , ("idade", JNumber 22)
+        , ("ativo", JBool True)
+        ]
+  
+  print pessoa
