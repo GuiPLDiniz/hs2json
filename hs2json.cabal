@@ -129,4 +129,6 @@ test-suite hs2json-test
     -- Test dependencies.
     build-depends:
         base ^>=4.20.2.0,
-        hs2json
+        hs2json,
+        QuickCheck >= 2.14 && < 3
+
