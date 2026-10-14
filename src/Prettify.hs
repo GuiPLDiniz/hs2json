@@ -12,6 +12,8 @@ module Prettify
   , punctuate
   , compact
   , pretty
+  , nest
+  , group
   ) where
 
 import Prelude hiding ((<>))
@@ -24,6 +26,7 @@ data Doc
   | Line
   | Concat Doc Doc
   | Union Doc Doc
+  | Nest Int Doc
   deriving (Show, Eq)
 
 -- Documento vazio
@@ -47,6 +50,9 @@ double d = text (show d)
 line :: Doc
 line = Line
 
+nest :: Int -> Doc -> Doc
+nest n doc = Nest n doc
+
 -- Concatenacao de documentos
 (<>) :: Doc -> Doc -> Doc
 Empty <> y = y
@@ -58,6 +64,8 @@ hcat :: [Doc] -> Doc
 hcat = foldr (<>) empty
 
 -- Converte um documento em texto
+
+
 compact :: Doc -> String
 compact doc = transform [doc]
   where
@@ -67,9 +75,11 @@ compact doc = transform [doc]
         Empty        -> transform ds
         Char c       -> c : transform ds
         Text s       -> s ++ transform ds
-        Line         -> '\n' : transform ds
+        Line         -> transform ds
         Concat a b   -> transform (a:b:ds)
         Union _ b    -> transform (b:ds)
+        Nest _ x     -> transform (x:ds)
+
 
 
 -- Junta documentos utilizando separadores flexiveis
@@ -102,29 +112,37 @@ flatten (Text s)     = Text s
 flatten Line         = Char ' '
 flatten (Concat x y) = Concat (flatten x) (flatten y)
 flatten (Union x _)  = flatten x
+flatten (Nest n x) = Nest n (flatten x)
+
 
 -- Renderiza um documento respeitando a largura
+-- e a indentacao
 pretty :: Int -> Doc -> String
-pretty width doc = best 0 [doc]
+pretty width doc = best 0 [(0, doc)]
   where
     best _ [] = ""
-    best col (d:ds) =
+    best col ((indent, d):ds) =
       case d of
-        Empty      -> best col ds
-        Char c     -> c : best (col + 1) ds
-        Text s     -> s ++ best (col + length s) ds
-        Line       -> '\n' : best 0 ds
-        Concat a b -> best col (a:b:ds)
-        Union a b  ->
+        Empty -> best col ds
+        Char c -> c : best (col + 1) ds
+        Text s -> s ++ best (col + length s) ds
+        Line ->
+          '\n' : replicate indent ' '
+          ++ best indent ds
+        Concat a b ->
+          best col ((indent, a):(indent, b):ds)
+        Union a b ->
           nicest col
-            (best col (a:ds))
-            (best col (b:ds))
+            (best col ((indent, a):ds))
+            (best col ((indent, b):ds))
+        Nest n x ->
+          best col ((indent + n, x):ds)
 
     nicest col a b
       | fits (width - col) a = a
       | otherwise            = b
 
     fits w _ | w < 0 = False
-    fits _ ""         = True
-    fits _ ('\n':_)   = True
-    fits w (_:cs)     = fits (w - 1) cs
+    fits _ "" = True
+    fits _ ('\n':_) = True
+    fits w (_:cs) = fits (w - 1) cs

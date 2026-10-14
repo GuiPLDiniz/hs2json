@@ -1,30 +1,29 @@
 
 module Main where
 
-import Prelude hiding ((<>))
-import Prettify
+import SimpleJSON
+import PrettyJSON
+import Prettify (pretty, compact)
 
 main :: IO ()
 main = do
-  let documento =
-        text "Haskell" <> char ' ' <> text "JSON"
+  let pessoa = JObject
+        [ ("nome", JString "Ana")
+        , ("idade", JNumber 22)
+        , ("ativo", JBool True)
+        , ("cidade", JString "Sao Luis")
+        , ("telefones", JArray
+            [ JString "99999-1111"
+            , JString "98888-2222"
+            ])
+        ]
 
-  putStrLn "Teste 1 - Compact:"
-  putStrLn (compact documento)
+  putStrLn "=== JSON compacto ==="
+  putStrLn (compact (renderJValue pessoa))
 
-  putStrLn "\nTeste 2 - Pretty:"
-  putStrLn (pretty 80 documento)
+  putStrLn "\n=== JSON formatado ==="
+  putStrLn (pretty 40 (renderJValue pessoa))
 
-  let lista =
-        fsep
-          [ text "Haskell"
-          , text "permite"
-          , text "formatar"
-          , text "documentos"
-          ]
-
-  putStrLn "\nTeste 3 - Largura 80:"
-  putStrLn (pretty 80 lista)
-
-  putStrLn "\nTeste 4 - Largura 15:"
-  putStrLn (pretty 15 lista)
+  putStrLn "\n=== Teste de escapes ==="
+  let mensagem = JString "Linha 1\nLinha 2\t\"teste\""
+  putStrLn (compact (renderJValue mensagem))
