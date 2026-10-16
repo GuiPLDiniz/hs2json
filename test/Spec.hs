@@ -112,6 +112,56 @@ prop_escapeString s =
     _ -> False
 
 
+-- Valores numericos especiais nao podem aparecer no JSON
+prop_numerosEspeciais :: Bool
+prop_numerosEspeciais =
+  compact (renderJValue (JNumber (0 / 0))) == "null"
+  && compact (renderJValue (JNumber (1 / 0))) == "null"
+  && compact (renderJValue (JNumber ((-1) / 0))) == "null"
+
+-- Arrays e objetos vazios
+prop_estruturasVazias :: Bool
+prop_estruturasVazias =
+  compact (renderJValue (JArray [])) == "[]"
+  && compact (renderJValue (JObject [])) == "{}"
+
+
+
+-- Verifica escapes Unicode
+prop_unicode :: Bool
+prop_unicode =
+  compact (renderJValue (JString "\x1F600"))
+    == "\"\\ud83d\\ude00\""
+  && compact (renderJValue (JString "\x00E7"))
+    == "\"\x00E7\""
+  && compact (renderJValue (JString "\n"))
+    == "\"\\n\""
+
+
+-- Verifica estruturas JSON aninhadas
+prop_estruturasAninhadas :: Bool
+prop_estruturasAninhadas =
+  let documento =
+        JObject
+          [ ("usuario", JObject
+              [ ("nome", JString "Ana")
+              , ("ativo", JBool True)
+              ])
+          , ("numeros", JArray
+              [ JNumber 1
+              , JNumber 2
+              , JNumber 3
+              ])
+          ]
+
+      resultado = compact (renderJValue documento)
+
+  in resultado ==
+       "{\"usuario\": {\"nome\": \"Ana\",\"ativo\": true},\"numeros\": [1.0,2.0,3.0]}"
+
+
+
+
 
 main :: IO ()
 main = do
@@ -124,6 +174,10 @@ main = do
     , executar "getObject" prop_getObject
     , executar "renderBool" prop_renderBool
     , executar "escapeString" prop_escapeString
+    , executar "numerosEspeciais" prop_numerosEspeciais
+    , executar "estruturasVazias" prop_estruturasVazias
+    , executar "unicode" prop_unicode
+    , executar "estruturasAninhadas" prop_estruturasAninhadas
     ]
 
   if and resultados

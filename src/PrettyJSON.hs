@@ -17,7 +17,9 @@ import Prettify
 -- Converte um valor JSON em documento
 renderJValue :: JValue -> Doc
 renderJValue (JString s) = string s
-renderJValue (JNumber n) = double n
+renderJValue (JNumber n)
+  | isNaN n || isInfinite n = text "null"
+  | otherwise               = double n
 renderJValue (JBool True) = text "true"
 renderJValue (JBool False) = text "false"
 renderJValue JNull = text "null"
