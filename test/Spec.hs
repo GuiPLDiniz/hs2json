@@ -72,6 +72,14 @@ prop_getInt n =
     numero = fromIntegral n :: Double
 
 
+-- Verifica a extracao de numeros Double
+prop_getDouble :: Double -> Property
+prop_getDouble n =
+  not (isNaN n || isInfinite n) ==>
+    getDouble (JNumber n) === Just n
+
+
+
 -- Propriedade 3: extracao de booleanos
 prop_getBool :: Bool -> Bool
 prop_getBool b =
@@ -161,6 +169,25 @@ prop_estruturasAninhadas =
 
 
 
+-- Verifica escapes obrigatorios de caracteres JSON
+prop_escapesEspeciais :: Bool
+prop_escapesEspeciais =
+  and
+    [ confere "\"" "\\\""
+    , confere "\\" "\\\\"
+    , confere "\n" "\\n"
+    , confere "\t" "\\t"
+    , confere "\x0001" "\\u0001"
+    ]
+  where
+    confere original esperado =
+      compact (renderJValue (JString original))
+        == "\"" ++ esperado ++ "\""
+
+
+
+
+
 
 
 main :: IO ()
@@ -178,6 +205,8 @@ main = do
     , executar "estruturasVazias" prop_estruturasVazias
     , executar "unicode" prop_unicode
     , executar "estruturasAninhadas" prop_estruturasAninhadas
+    , executar "getDouble" prop_getDouble
+    , executar "escapesEspeciais" prop_escapesEspeciais
     ]
 
   if and resultados
