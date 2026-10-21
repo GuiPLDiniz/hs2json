@@ -92,11 +92,12 @@ Durante o desenvolvimento, foram identificados e corrigidos problemas relacionad
 
 O projeto utiliza commits incrementais com mensagens descritivas, seguindo o padrão *Conventional Commits*.
 
+
 ## Vídeo de apresentação
 
-**Link do vídeo:** A inserir após a gravação.
+**Link do vídeo:** [Apresentação do projeto hs2json](https://drive.google.com/drive/folders/1y0xNQTF0xSoBpFHXQEK01G0a6zMvqIba?usp=sharing)
 
-O vídeo demonstrará a compilação, execução, arquitetura, testes e principais dificuldades enfrentadas durante o desenvolvimento.
+
 
 ## Referências
 
