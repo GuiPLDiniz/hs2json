@@ -49,22 +49,27 @@ cabal test --test-show-details=direct
 
 O executável demonstra a representação de objetos JSON, sua renderização compacta e formatada e o tratamento de escapes em strings.
 
+
 ## Testes com QuickCheck
 
-A suíte contém 12 verificações, abrangendo:
+A suíte contém 14 verificações, abrangendo:
 
 1. Extração de strings (`getString`).
 2. Extração de inteiros (`getInt`).
-3. Extração de booleanos (`getBool`).
-4. Extração de arrays (`getArray`).
-5. Identificação de valores nulos (`isNull`).
-6. Extração de objetos (`getObject`).
-7. Renderização de booleanos.
-8. Escapes de strings.
-9. Tratamento de números não finitos.
-10. Arrays e objetos vazios.
-11. Caracteres Unicode.
-12. Estruturas JSON aninhadas.
+3. Extração de números decimais (`getDouble`).
+4. Extração de booleanos (`getBool`).
+5. Extração de arrays (`getArray`).
+6. Identificação de valores nulos (`isNull`).
+7. Extração de objetos (`getObject`).
+8. Renderização de booleanos.
+9. Escapes de strings.
+10. Tratamento de números não finitos.
+11. Arrays e objetos vazios.
+12. Caracteres Unicode.
+13. Estruturas JSON aninhadas.
+14. Escapes especiais de JSON (aspas, barras invertidas,
+    quebras de linha, tabulações e caracteres de controle).
+
 
 O gerador utiliza `sized` e `resize (n div 2)` para limitar o crescimento das estruturas recursivas.
 
